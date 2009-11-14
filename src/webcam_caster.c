@@ -23,44 +23,10 @@
 #define UUID "d185cc00-2d0b-1143-28c1-2b717a493d1c"
 #define XML_PATTERN "<?xml version=\"1.0\"?><methodCall><methodName>llRemoteData</methodName><params><param><value><struct><member><name>Channel</name><value><string>%s</string></value></member><member><name>IntValue</name><value><int>42</int></value></member><member><name>StringValue</name><value><string>rtsp://%s:8554/stream</string></value></member></struct></value></param></params></methodCall>"
 
+#include <webcam_caster.h>
 #include <stdio.h>
 #include <string.h>
 #include <curl/curl.h>
-#include <gst/gst.h>
-#include <gst/rtsp-server/rtsp-server.h>
-
-
-struct Write {
-	const char *readptr;
-	int sizeleft;
-};
-
-static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *userp){
-	struct Write *pooh = (struct Write *)userp;
-
-	if(size*nmemb < 1)
-		return 0;
-
-	if(pooh->sizeleft) {
-		*(char*)ptr = pooh->readptr[0];
-		pooh->readptr++;
-		pooh->sizeleft--;
-		return 1;
-	}
-
-	return 0;
-}
-
-static gboolean timeout (GstRTSPServer *server, gboolean ignored) {
-	GstRTSPSessionPool *pool;
-
-	pool = gst_rtsp_server_get_session_pool (server);
-	gst_rtsp_session_pool_cleanup (pool);
-	g_object_unref (pool);
-
-	return TRUE;
-}
-
 
 int main(int argc, char **argv){
 	char buf[512];
@@ -150,4 +116,33 @@ int main(int argc, char **argv){
 
 	return 0;
 }
+
+
+static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *userp){
+	struct Write *pooh = (struct Write *)userp;
+
+	if(size*nmemb < 1)
+		return 0;
+
+	if(pooh->sizeleft) {
+		*(char*)ptr = pooh->readptr[0];
+		pooh->readptr++;
+		pooh->sizeleft--;
+		return 1;
+	}
+
+	return 0;
+}
+
+static gboolean timeout (GstRTSPServer *server, gboolean ignored) {
+	GstRTSPSessionPool *pool;
+
+	pool = gst_rtsp_server_get_session_pool (server);
+	gst_rtsp_session_pool_cleanup (pool);
+	g_object_unref (pool);
+
+	return TRUE;
+}
+
+
 
