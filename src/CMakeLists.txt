@@ -1,11 +1,22 @@
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake
+	/usr/share/apps/cmake/modules)
+
 ADD_EXECUTABLE(webcam_caster webcam_caster.c)
 ADD_EXECUTABLE(vnc_caster vnc_caster.c)
-set(CMAKE_MODULE_PATH /usr/share/apps/cmake/modules)
+#include_directories(/home/tanxin/final/dist/include/gstreamer-0.10)
 
-include_directories(. /home/tanxin/final/dist/include/gstreamer-0.10)
+#TARGET_LINK_LIBRARIES(webcam_caster gstrtspserver-0.10)
+#TARGET_LINK_LIBRARIES(vnc_caster gstrtspserver-0.10)
 
-TARGET_LINK_LIBRARIES(webcam_caster gstrtspserver-0.10)
-TARGET_LINK_LIBRARIES(vnc_caster gstrtspserver-0.10)
+FIND_PACKAGE(GSTRtspServer)
+IF(GSTRtspServer_FOUND)
+	INCLUDE_DIRECTORIES(${GSTRtspServer_INCLUDE_DIR})
+	TARGET_LINK_LIBRARIES(webcam_caster ${GSTRtspServer_LIBRARY})
+	TARGET_LINK_LIBRARIES(vnc_caster ${GSTRtspServer_LIBRARY})
+ELSE(GSTRtspServer_FOUND)
+	MESSAGE(FATAL_ERROR "GST Rtsp Server library not found")
+ENDIF(GSTRtspServer_FOUND)
+
 
 FIND_PACKAGE(CURL)
 IF(CURL_FOUND)
@@ -40,6 +51,10 @@ IF(LIBXML2_FOUND)
 	TARGET_LINK_LIBRARIES(webcam_caster ${LIBXML2_LIBRARIES})
 	TARGET_LINK_LIBRARIES(vnc_caster ${LIBXML2_LIBRARIES})
 ELSE(LIBXML2_FOUND)
-	MESSAGE(FATAL_ERROR "GLIB2 library not found")
+	MESSAGE(FATAL_ERROR "LIBXML2 library not found")
 ENDIF(LIBXML2_FOUND)
+
+INSTALL(TARGETS webcam_caster vnc_caster
+	RUNTIME DESTINATION bin
+	)
 
