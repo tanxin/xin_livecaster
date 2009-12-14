@@ -21,7 +21,9 @@
 
 #define RPC_URL	"http://xmlrpc.secondlife.com/cgi-bin/xmlrpc.cgi"
 #define UUID "d185cc00-2d0b-1143-28c1-2b717a493d1c"
-#define XML_PATTERN "<?xml version=\"1.0\"?><methodCall><methodName>llRemoteData</methodName><params><param><value><struct><member><name>Channel</name><value><string>%s</string></value></member><member><name>IntValue</name><value><int>42</int></value></member><member><name>StringValue</name><value><string>rtsp://%s:8554/stream</string></value></member></struct></value></param></params></methodCall>"
+//#define XML_PATTERN "<?xml version=\"1.0\"?><methodCall><methodName>llRemoteData</methodName><params><param><value><struct><member><name>Channel</name><value><string>%s</string></value></member><member><name>IntValue</name><value><int>42</int></value></member><member><name>StringValue</name><value><string>rtsp://%s:8554/stream</string></value></member></struct></value></param></params></methodCall>"
+#define XML_PATTERN "<?xml version=\"1.0\"?><methodCall><methodName>llRemoteData</methodName><params><param><value><struct><member><name>Channel</name><value><string>%s</string></value></member><member><name>IntValue</name><value><int>42</int></value></member><member><name>StringValue</name><value><string>http://%s:8800/ogg-video/</string></value></member></struct></value></param></params></methodCall>"
+
 
 #include "webcam_caster.h"
 #include <stdio.h>
