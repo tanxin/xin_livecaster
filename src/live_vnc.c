@@ -68,7 +68,7 @@ int main(int argc, char **argv){
 	CURLcode res;
 
 	GstElement *bin;
-	GstElement *rfbsrc, *flt, *videoscale, *colorspace, *theoraenc, *oggmux, *shout2send;
+	GstElement *rfbsrc, *videorate, *flt1, *videoscale, *flt2, *colorspace, *theoraenc, *oggmux, *shout2send;
 
 	gst_init (&argc, &argv);
 
@@ -105,14 +105,20 @@ int main(int argc, char **argv){
 	if(argc>1)
 		g_object_set (G_OBJECT (rfbsrc), "host", argv[1], NULL);
 	else
-		g_object_set (G_OBJECT (rfbsrc), "host", "localhost", NULL);
+		g_object_set (G_OBJECT (rfbsrc), "host", "127.0.0.1", NULL);
 
-	flt = gst_element_factory_make("capsfilter", "filter");
-	g_assert(flt);
-	g_object_set(G_OBJECT(flt), "caps",
+	flt1 = gst_element_factory_make("capsfilter", "scale filter");
+	g_assert(flt1);
+	g_object_set(G_OBJECT(flt1), "caps",
 			gst_caps_new_simple("video/x-raw-yuv",
-				"width", G_TYPE_INT, 320,
-				"height", G_TYPE_INT, 240,
+				"width", G_TYPE_INT, 800,
+				"height", G_TYPE_INT, 600,
+				NULL), NULL);
+
+	flt2 = gst_element_factory_make("capsfilter", "rate filter");
+	g_assert(flt2);
+	g_object_set(G_OBJECT(flt2), "caps",
+			gst_caps_new_simple("video/x-raw-yuv",
 				"framerate", GST_TYPE_FRACTION, 5, 1,
 				NULL), NULL);
 
@@ -121,13 +127,15 @@ int main(int argc, char **argv){
 
 	videoscale = gst_element_factory_make ("videoscale", "video scale");
 	g_assert(videoscale);
-	//g_object_set (G_OBJECT (videoscale), "width", 320, NULL);
-	//g_object_set (G_OBJECT (videoscale), "height", 240, NULL);
+
+
+	videorate = gst_element_factory_make ("videorate", "video rate");
+	g_assert(videoscale);
 
 
 	theoraenc = gst_element_factory_make("theoraenc", "theora encoder");
 	g_assert(theoraenc);
-	g_object_set (G_OBJECT (theoraenc), "quality", 25, NULL);
+	g_object_set (G_OBJECT (theoraenc), "quality", 30, NULL);
 
 	oggmux = gst_element_factory_make("oggmux", "ogg muxer");
 	g_assert(oggmux);
@@ -139,8 +147,8 @@ int main(int argc, char **argv){
 	g_object_set (G_OBJECT (shout2send), "password", "rtsp", NULL);
 	g_object_set (G_OBJECT (shout2send), "mount", MOUNT, NULL);
 
-	gst_bin_add_many(GST_BIN(bin), rfbsrc, flt, videoscale, colorspace, theoraenc, oggmux, shout2send, NULL);
-	gst_element_link_many(rfbsrc, flt, videoscale, colorspace, theoraenc, oggmux, shout2send, NULL);
+	gst_bin_add_many(GST_BIN(bin), rfbsrc, colorspace, videoscale, flt1, videorate, flt2, theoraenc, oggmux, shout2send, NULL);
+	gst_element_link_many(rfbsrc, colorspace, videoscale, flt1, videorate, flt2, theoraenc, oggmux, shout2send, NULL);
 
 	gst_element_set_state(bin, GST_STATE_PLAYING);
 

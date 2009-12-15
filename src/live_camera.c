@@ -117,13 +117,11 @@ int main(int argc, char **argv){
 
 	videoscale = gst_element_factory_make ("videoscale", "video scale");
 	g_assert(videoscale);
-	//g_object_set (G_OBJECT (videoscale), "width", 320, NULL);
-	//g_object_set (G_OBJECT (videoscale), "height", 240, NULL);
 
 
 	theoraenc = gst_element_factory_make("theoraenc", "theora encoder");
 	g_assert(theoraenc);
-	g_object_set (G_OBJECT (theoraenc), "quality", 25, NULL);
+	g_object_set (G_OBJECT (theoraenc), "quality", 30, NULL);
 
 	oggmux = gst_element_factory_make("oggmux", "ogg muxer");
 	g_assert(oggmux);
