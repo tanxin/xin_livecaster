@@ -107,12 +107,16 @@ int main(int argc, char **argv){
 	else
 		g_object_set (G_OBJECT (rfbsrc), "host", "127.0.0.1", NULL);
 
+	if(argc>2)
+		g_object_set (G_OBJECT (rfbsrc), "password", argv[2], NULL);
+
+
 	flt1 = gst_element_factory_make("capsfilter", "scale filter");
 	g_assert(flt1);
 	g_object_set(G_OBJECT(flt1), "caps",
 			gst_caps_new_simple("video/x-raw-yuv",
 				"width", G_TYPE_INT, 800,
-				"height", G_TYPE_INT, 600,
+				"height", G_TYPE_INT, 450,
 				NULL), NULL);
 
 	flt2 = gst_element_factory_make("capsfilter", "rate filter");
